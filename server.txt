@@ -3,3 +3,6 @@
 3.npm install express, nodemon ,http
 4.listen server
 5.you can wrtie get API
+
+to connect with mongoBD
+1.npm i mongoose
