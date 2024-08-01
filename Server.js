@@ -21,7 +21,27 @@ const app = express();
 const port = 8000;
 
 app.get('/', (req, res) => {
-  res.send('Hello World from Express Server!');
+  res.json({
+    status:200,
+    message:"Welcome to the API",
+  })
+});
+app.get('/user', (req, res) => {
+  res.json({
+    status:200,
+    message:"Welcome to the API",
+    data:[{
+      id:1,
+      name:"John",
+      email:"john@gmail.com"
+    },
+    {
+    id:2,
+    name:"manu",
+    email:"manu@gmail.com"
+    }
+    ]
+  })
 });
 
 app.listen(port, () => {

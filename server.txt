@@ -1,0 +1,5 @@
+1.node Installation
+2.npm init y Inisilization project
+3.npm install express, nodemon ,http
+4.listen server
+5.you can wrtie get API
