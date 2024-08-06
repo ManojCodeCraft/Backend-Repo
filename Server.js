@@ -1,72 +1,72 @@
-// const { createServer, request } = require('node:http');
 
-// const hostname = 'localhost';
-// const express=require('express');
-// const app=express.Router();
-// const port = 8000;
-
-// const server = createServer((req, res) => {
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type', 'text/plain');
-//   res.end('Hello World');
-// });
-// app.get("/",request,response=>{
-//     response.setEncoding("Hello World from Express Server!");
-// })
-// server.listen(port, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${port}/`);
-// });
 const express = require('express');
+const cors = require('cors');
+const path = require("path");
+const fs = require("fs");
+const parser = require("body-parser");
 const app = express();
+const routes = express.Router();
+const User = require("./model")
+const mongoose = require("mongoose");
+app.use(routes);
+app.use(parser.json());
+app.use(express.json());
 const port = 8000;
-const User=require("./model")
-const mongoose=require("mongoose");
-const url="mongodb+srv://22at1a0508:NuwNgQ1dDU6nQhXD@cluster0.uga0sgy.mongodb.net/Backend?retryWrites=true&w=majority&appName=Cluster0"
-
-
-mongoose.connect(url).then((data)=>{
-  console.log("Data connected Successfully");
-}).catch((err)=>{
-  console.log("Failed to connect with MongoDB",err.message);
+const uri = "mongodb+srv://swatigathiya138:IoCeHmdFyCHcYZBr@cluster0.powfvr2.mongodb.net/Backend?retryWrites=true&w=majority&appName=Cluster0";
+app.use(cors());
+mongoose.connect(uri).then((data) => {
+    console.log("Database connected Successfully")
+}).catch((err) => {
+    console.log("Failed to connect with Mongoose", err.message)
 })
-app.get('/', (req, res) => {
-  res.json({
-    status:200,
-    message:"Welcome to the API",
-  })
-});
-app.get('/user', (req, res) => {
-  res.json({
-    status:200,
-    message:"Welcome to the API",
-    data:[{
-      id:1,
-      name:"John",
-      email:"john@gmail.com"
-    },
-    {
-    id:2,
-    name:"manu",
-    email:"manu@gmail.com"
+
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname + "/index.html"))
+})
+//  http://localhost:8000/create-user
+app.post("/create-user", async (req, res) => {
+    const user = req.body;
+
+    console.log("User Data  ", user);
+    const data = new User(user);
+    const davedData = await data.save();
+
+    if (user) {
+        return res.json(davedData);
     }
-    ]
-  })
-});
+    return res.json({ message: "Data not found" });
+
+})
+
+app.get("/get-users", async (req, res) => {
+    const users = await User.find();
+    if (users) {
+        return res.json(users);
+    }
+    return res.json({ message: "Data not found" });
+})
+
+
+app.delete("/delete-user/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = await User.deleteOne({ _id: id })
+    if (data.deletedCount > 0) {
+        return res.json({ message: "User deleted successfully" });
+    }
+})
 
 app.listen(port, () => {
-
-  const data={
-    name:'test',
-    email:'test@example.com',
-    phone:"787878"
-  }
-  const user=new User(data);
-  user.save().then((data)=>{
-    console.log(data);
-  }).catch((err)=>{
-    console.log(err.message);
-  })
-  console.log(`Server running at http://localhost:${port}/`);
-});
-
-
+    //      const data={
+    //         name: 'test',
+    //         email: 'test@example.com',
+    //         phone:"787878"
+    //      }
+    //    const user = new User(data);
+    //    user.save().then((data)=>{
+    //        console.log(data)
+    //    }).catch((err)=>{
+    //        console.log(err.message)
+    //    })
+    console.log("Server listening on port ", port)
+})
