@@ -1,8 +1,6 @@
 package ticket.booking.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ticket.booking.entities.Ticket;
 import ticket.booking.entities.Train;
 import ticket.booking.entities.User;
 import ticket.booking.util.UserServiceUtil;
@@ -30,7 +28,16 @@ public class UserBookingService{
     }
 
     private void loadUserListFromFile() throws IOException {
-        userList = objectMapper.readValue(new File(USER_FILE_PATH), new TypeReference<List<User>>() {});
+        File usersFile = new File(USER_FILE_PATH);
+        if (!usersFile.exists()) {
+            // Create file and initialize with an empty list
+            objectMapper.writeValue(usersFile, new ArrayList<User>());
+        }
+        try {
+            userList = objectMapper.readValue(usersFile, new TypeReference<List<User>>() {});
+        } catch (Exception e) {
+            userList = new ArrayList<>(); // Fallback to an empty list
+        }
     }
 
     public Boolean loginUser(){
